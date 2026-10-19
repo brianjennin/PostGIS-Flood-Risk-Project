@@ -5,7 +5,7 @@ REM Goal: Download Overture data and load all source layers into the raw schema.
 REM
 REM Run from the repo root in the OSGeo4W Shell (provides ogr2ogr).
 REM Requires: overturemaps CLI (pip install overturemaps), flood_risk database
-REM           created by sql\01_setup_sql.sql, PostGIS container on port 5433.
+REM           created by sql\01_setup.sql, PostGIS container on port 5433.
 REM
 REM FEMA NFHL is a manual download (no stable direct URL):
 REM   msc.fema.gov/portal/advanceSearch > Virginia > Norfolk (Independent City)
@@ -43,5 +43,12 @@ ogr2ogr -f PostgreSQL %PG% data\overture\buildings.geojson     -nln raw.building
 ogr2ogr -f PostgreSQL %PG% data\overture\division_area.geojson -nln raw.division_area -nlt PROMOTE_TO_MULTI %LCO% -overwrite || exit /b 1
 REM places are points: no PROMOTE_TO_MULTI
 ogr2ogr -f PostgreSQL %PG% data\overture\places.geojson        -nln raw.places        %LCO% -overwrite || exit /b 1
+
+REM ---- 4. Load Norfolk Civic Leagues (neighborhood boundaries) ----------------
+REM Read directly from the City of Norfolk ArcGIS REST service (EPSG:4326).
+REM %%3D is the URL-encoded "=" (doubled %% so cmd does not treat %3 as an argument).
+REM Contact columns (president, e_mail, ...) are dropped in 03_clean.sql.
+set CIVIC_URL="https://gisshare.norfolk.gov/pubserver/rest/services/OpenData/Maps/MapServer/12/query?where=1%%3D1&outFields=*&f=geojson"
+ogr2ogr -f PostgreSQL %PG% %CIVIC_URL% -nln raw.civic_leagues -nlt PROMOTE_TO_MULTI %LCO% -overwrite || exit /b 1
 
 echo All layers loaded into raw schema.
