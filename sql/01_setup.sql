@@ -3,7 +3,7 @@
 --       and run version / CRS sanity checks.
 
 -- Run once. Errors harmlessly if flood_risk already exists.
-CREATE DATABASE flood_risk;
+-- CREATE DATABASE flood_risk;
 SELECT current_database();
 
 CREATE EXTENSION IF NOT EXISTS postgis;
