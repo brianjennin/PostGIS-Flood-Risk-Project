@@ -49,7 +49,7 @@ ORDER BY subtype, class;
 -- 5b. Neighborhood coverage: are there enough named neighborhoods to use?
 SELECT subtype, (names::json)->>'primary' AS name
 FROM raw.division_area
-WHERE subtype IN ('locality', 'macrohood', 'neighborhood')
+WHERE subtype IN ('locality', 'macrohood', 'neighborhood');
 
 -- Norfolk boundary: confirm the county row exists
 SELECT gid, subtype, class, (names::json)->>'primary' AS name
